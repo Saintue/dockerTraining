@@ -1,11 +1,8 @@
- FROM nginx:latest
+FROM python:3
+WORKDIR /usr/src/app
+COPY index.py index.py
+CMD [ "python", "./index.py" ]
 
- LABEL version="0.0.2"
- LABEL maintainer="bambo20023@gmail.com"
-
- WORKDIR /usr/share/nginx/html
-
- COPY index.html index.html
 
 
  
