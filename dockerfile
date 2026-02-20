@@ -1,7 +1,7 @@
  FROM ubuntu:latest
 
  LABEL version="0.0.1"
- LABEL maitainer="bambo20023@gmail.com"
+ LABEL maintainer="bambo20023@gmail.com"
 
  RUN apt-get update && apt-get upgrade -y
 
