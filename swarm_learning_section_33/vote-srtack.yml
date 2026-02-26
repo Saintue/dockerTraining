@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+
+  redis:
+    image: redis:alpine
+    networks:
+      - front_end_ntw
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - back_end_ntw
+
+  vote:
+    image: dockersamples/examplevotingapp_vote
+    ports:
+      - 8080:80
+    networks:
+      - front_end_ntw
+    deploy:
+      replicas: 2
+
+  result:
+    image: dockersamples/examplevotingapp_result
+    ports:
+      - 8081:80
+    networks:
+      - back_end_ntw
+
+  worker:
+    image: dockersamples/examplevotingapp_worker
+    networks:
+      - front_end_ntw
+      - back_end_ntw
+    deploy:
+      replicas: 2
+
+networks:
+  front_end_ntw:
+  back_end_ntw:
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=192.168.0.136,rw,nfsvers=4  #you need to have nfs setup on addr 192.168.0.136 so the data can be stored properly
+      device: ":/srv/nfs/swarm_data/postgres"
+
+      #this yml will launch 5 service stack
