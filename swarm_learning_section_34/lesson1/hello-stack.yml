@@ -37,7 +37,7 @@ services:
       placement:
         constraints:
           - node.hostname == SwarmManager1
-    command: redis-server --apendonly yes
+    command: redis-server --appendonly yes
     networks:
       - webnet
 networks:
