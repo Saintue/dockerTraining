@@ -6,6 +6,11 @@ services:
     image: redis:alpine
     networks:
       - front_end_ntw
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   db:
     image: postgres:15-alpine
@@ -19,6 +24,12 @@ services:
     secrets:
       - postgres_password
       - postgres_user
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   vote:
     image: dockersamples/examplevotingapp_vote
@@ -26,8 +37,15 @@ services:
       - 8080:80
     networks:
       - front_end_ntw
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     deploy:
       replicas: 2
+    
 
   result:
     image: dockersamples/examplevotingapp_result
@@ -35,12 +53,24 @@ services:
       - 8081:80
     networks:
       - back_end_ntw
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    
   worker:
     image: dockersamples/examplevotingapp_worker
     networks:
       - front_end_ntw
       - back_end_ntw
+    healthcheck:
+      test: ["CMD-SHELL", "pidof dotnet || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     deploy:
       replicas: 2
 
